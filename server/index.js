@@ -1,73 +1,19 @@
 (function () {
     'use strict';
 
-    var hapi = require('hapi'),
-        halacious = require('halacious'),
-        util = require('util'),
+    var server = require('./server'),
+        apiNamespace = require('./api-namespace'),
+
         path = require('path');
 
-    function createServer() {
-        var server = new hapi.Server();
-
-        server.connection({port: 8080});
-        return server;
-    }
-
-    function configureViewEngine(server) {
-        server.views({
-            engines: {
-                jsx: require('hapi-react-views')
-            },
-            compileOptions: {
-                renderMethod: 'renderToString'
-            },
-            path: path.join(__dirname, '../views')
-        });
-    }
-
-    function createNamespace(server) {
-        var namespace;
-        namespace = server.plugins.halacious.namespaces.add({
-            name: 'tinker',
-            description: 'a tinker\'s namespace',
-            prefix: 'tkr'
-        });
-        return namespace;
-    }
-
-    function configureAPI(server) {
-        var halaciousOptions = {
-            apiPath: ''
-        };
-
-        server.register({register: halacious, options: halaciousOptions}, function (err) {
-            var namespace;
-
-            if (err) {
-                util.log(err);
-            }
-
-            namespace = createNamespace(server);
-
-            namespace.rel({
-                name: 'friends',
-                description: 'friends of tinker'
-            });
-
-            namespace.rel({
-                name: 'enemies',
-                description: 'enemies of tinker'
-            });
-        });
-    }
-
     function init() {
-        var server = createServer();
+        var pathToViews = path.join(__dirname, '../views'),
+            staticAssetPath = path.join(__dirname, '../client'),
+            serverInstance = server.create(8080, pathToViews, staticAssetPath);
 
-        configureViewEngine(server);
-        configureAPI(server);
+        apiNamespace.create(serverInstance);
 
-        server.route({
+        serverInstance.route({
             method: 'GET',
             path: '/friends',
             config: {
@@ -94,7 +40,7 @@
             }
         });
 
-        server.route({
+        serverInstance.route({
             method: 'GET',
             path: '/enemies',
             config: {
@@ -121,17 +67,7 @@
             }
         });
 
-        server.route({
-            method: 'GET',
-            path: '/static/{static*}',
-            handler: {
-                directory: {
-                    path: path.join(__dirname, '../client')
-                }
-            }
-        });
-
-        server.route({
+        serverInstance.route({
             method: 'GET',
             path: '/hello',
             handler: function (request, reply) {
@@ -139,12 +75,7 @@
             }
         });
 
-        server.start(function (err) {
-            if (err) {
-                util.log('error: ' + err);
-            }
-            util.log('server started on: ' + server.info.uri);
-        });
+        server.start();
     }
 
     init();
