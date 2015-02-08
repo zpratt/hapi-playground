@@ -3,6 +3,7 @@
 
     var server = require('./server'),
         apiNamespace = require('./api-namespace'),
+        controllers = require('./controllers'),
 
         path = require('path');
 
@@ -13,66 +14,8 @@
 
         apiNamespace.create(serverInstance);
 
-        serverInstance.route({
-            method: 'GET',
-            path: '/friends',
-            config: {
-                handler: function (req, reply) {
-                    reply([
-                        {
-                            id: 1,
-                            name: 'zach'
-                        },
-                        {
-                            id: 2,
-                            name: 'john'
-                        }
-                    ]);
-                },
-                plugins: {
-                    hal: {
-                        links: {
-                            'tkr:enemies': '../enemies'
-                        },
-                        api: 'tkr:friends'
-                    }
-                }
-            }
-        });
-
-        serverInstance.route({
-            method: 'GET',
-            path: '/enemies',
-            config: {
-                handler: function (req, reply) {
-                    reply([
-                        {
-                            id: 1,
-                            name: 'zach'
-                        },
-                        {
-                            id: 2,
-                            name: 'john'
-                        }
-                    ]);
-                },
-                plugins: {
-                    hal: {
-                        links: {
-                            'tkr:friends': '../friends'
-                        },
-                        api: 'tkr:enemies'
-                    }
-                }
-            }
-        });
-
-        serverInstance.route({
-            method: 'GET',
-            path: '/hello',
-            handler: function (request, reply) {
-                reply.view('index', { title: 'My home page' });
-            }
+        controllers.forEach(function (controller) {
+            serverInstance.route(controller.controller);
         });
 
         server.start();
