@@ -123,10 +123,10 @@
 
         server.route({
             method: 'GET',
-            path: '/{client*}',
+            path: '/static/{static*}',
             handler: {
                 directory: {
-                    path: './client'
+                    path: path.join(__dirname, '../client')
                 }
             }
         });
