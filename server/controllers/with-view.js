@@ -2,7 +2,7 @@
     'use strict';
 
     function handler(request, reply) {
-        reply.view('index', { title: 'My home page' });
+        reply.view('index', { title: 'Friend List' });
     }
 
     module.exports = {
