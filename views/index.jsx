@@ -2,13 +2,14 @@
 
 var React = require('react');
 
-var HelloView = React.createClass({
+module.exports = React.createClass({
     render: function() {
-        return <body>
-            <div>Hello {this.props.title}</div>
-            <script src="static/index.js" type="text/javascript"></script>
-            </body>;
+        return (
+            <body>
+                <h1>{this.props.title}</h1>
+                <div className="friend-list"></div>
+                <script src="static/app.js" type="text/javascript"></script>
+            </body>
+        );
     }
 });
-
-module.exports = HelloView;
