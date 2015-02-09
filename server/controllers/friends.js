@@ -1,17 +1,10 @@
 (function () {
     'use strict';
 
+    var friendsRepository = require('./friends-repository');
+
     function handler(request, reply) {
-        reply([
-            {
-                id: 1,
-                name: 'zach'
-            },
-            {
-                id: 2,
-                name: 'john'
-            }
-        ]);
+        reply(friendsRepository.all());
     }
 
     module.exports = {
